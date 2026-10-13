@@ -22,23 +22,40 @@ The board is a first-class DSH destination, not an overlay: it registers into th
 
 ## Install
 
+Install straight from GitHub — this is the supported path, and the only one that works today (the package is not on npm yet):
+
 ```sh
-dsh plugin --profile <your-profile> add dsh-codex-task-board
+dsh plugin --profile <your-profile> add git+https://github.com/cpsGGG/dsh-codex-task-board.git
 ```
 
 Then restart DSH and open **任务面板** at the bottom of the sidebar.
 
 <details>
-<summary>Install from a git checkout instead</summary>
+<summary>Other ways to install</summary>
+
+**From a local clone** (best if you want to edit the source):
 
 ```sh
 git clone https://github.com/cpsGGG/dsh-codex-task-board.git
 dsh plugin --profile <your-profile> add ./dsh-codex-task-board
 ```
 
-`lib/client.js` is committed, so no build step is required. If you change `src/`, run `npm run build`.
+**Pinned to a tag or commit** — recommended once versions are tagged, so an
+upstream change cannot surprise you:
 
-> **Windows note:** pnpm installs `file:` dependencies as a *copy*, not a symlink. If you are developing against a local checkout, point the profile's `node_modules/dsh-codex-task-board` at your working tree with a directory junction instead, or re-run the install after every build.
+```sh
+dsh plugin --profile <your-profile> add git+https://github.com/cpsGGG/dsh-codex-task-board.git#v1.0.0
+```
+
+`lib/client.js` is committed, so **no build step and no install scripts run** —
+the package deliberately ships no `prepare` script, which is what would
+otherwise trip pnpm's `allowBuilds` prompt on a git install. If you change
+`src/`, run `npm run build` and re-install.
+
+> **Windows note:** pnpm installs `file:` dependencies as a *copy*, not a
+> symlink. When developing against a local checkout, point the profile's
+> `node_modules/dsh-codex-task-board` at your working tree with a directory
+> junction instead, or re-run the install after every build.
 
 </details>
 
@@ -138,13 +155,18 @@ This project is not affiliated with DeepSeek AI or OpenAI. "DeepSeek Harness" an
 
 ### 安装
 
+从 GitHub 直接安装（当前唯一可用方式，包尚未发布到 npm）：
+
 ```sh
-dsh plugin --profile <你的 profile> add dsh-codex-task-board
+dsh plugin --profile <你的 profile> add git+https://github.com/cpsGGG/dsh-codex-task-board.git
 ```
 
 然后重启 DSH，点侧边栏底部的 **任务面板**。
 
-`lib/client.js` 已随仓库提交，无需构建。改动 `src/` 后运行 `npm run build`。
+也可以先 `git clone` 再 `add ./dsh-codex-task-board`，或锁定到某个 tag/commit：
+`add git+https://github.com/cpsGGG/dsh-codex-task-board.git#v1.0.0`。
+
+`lib/client.js` 已随仓库提交，**无需构建、也不会执行任何安装脚本**——本包刻意不提供 `prepare`，否则 git 安装会触发 pnpm 的 `allowBuilds` 提示。改动 `src/` 后运行 `npm run build` 并重新安装。
 
 > **Windows 提示**：pnpm 对 `file:` 依赖是**复制**而非软链。若你在本地 checkout 上开发，建议把 profile 的 `node_modules/dsh-codex-task-board` 用目录联接指向工作目录，否则每次构建后都要重装。
 
