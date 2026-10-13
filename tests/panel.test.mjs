@@ -263,10 +263,10 @@ test('the panel declares the services it reads', () => {
 // -- structure --------------------------------------------------------------
 
 test('the panel renders the three columns with their original names and hints', () => {
-  const columns = findAll(harness().tree, 'ctb-column')
+  const columns = findAll(harness().tree, 'dtb-column')
   assert.equal(columns.length, 3)
   assert.deepEqual(columns.map(c => c.props['data-status']), ['todo', 'doing', 'review'])
-  assert.deepEqual(columns.map(c => textOf(findAll(c, 'ctb-column-hint')[0])),
+  assert.deepEqual(columns.map(c => textOf(findAll(c, 'dtb-column-hint')[0])),
     ['刚加入、尚未开始', 'DSH 正在工作', '等待回答、批准或检查'])
   assert.deepEqual(columns.map(c => c.props.style['--tb-color']),
     ['#8b8b8b', '#339cff', '#e5a23c'])
@@ -276,31 +276,31 @@ test('the panel renders the original chrome', () => {
   const h = harness()
   // The sync stamp is written by the fold effect, so it lands on the render
   // after mount — assert the first paint, then the settled one.
-  assert.equal(textOf(findAll(h.tree, 'ctb-connection')[0]), '正在连接 DSH…')
+  assert.equal(textOf(findAll(h.tree, 'dtb-connection')[0]), '正在连接 DSH…')
   const tree = h.render()
-  assert.equal(textOf(findAll(tree, 'ctb-heading')[0]), '任务面板跨项目会话 · 本地保存')
-  assert.equal(textOf(findAll(tree, 'ctb-button-primary')[0]), '＋ 添加会话')
-  assert.equal(findAll(tree, 'ctb-search')[0].props.children[1].props.placeholder, '搜索面板中的会话…')
-  assert.equal(textOf(findAll(tree, 'ctb-footer')[0]), '3 条会话完成后移出面板，不会删除原会话')
-  assert.match(textOf(findAll(tree, 'ctb-connection')[0]), /^已同步 · /)
+  assert.equal(textOf(findAll(tree, 'dtb-heading')[0]), '任务面板跨项目会话 · 本地保存')
+  assert.equal(textOf(findAll(tree, 'dtb-button-primary')[0]), '＋ 添加会话')
+  assert.equal(findAll(tree, 'dtb-search')[0].props.children[1].props.placeholder, '搜索面板中的会话…')
+  assert.equal(textOf(findAll(tree, 'dtb-footer')[0]), '3 条会话完成后移出面板，不会删除原会话')
+  assert.match(textOf(findAll(tree, 'dtb-connection')[0]), /^已同步 · /)
 })
 
 test('an empty board renders the original empty state in every column', () => {
   const empty = { ids: [], byId: {}, current: undefined, phase: 'ready', subagentsByParent: {}, jobsBySession: {} }
   const tree = harness(empty).tree
-  const empties = findAll(tree, 'ctb-empty')
+  const empties = findAll(tree, 'dtb-empty')
   assert.equal(empties.length, 3)
   assert.deepEqual(empties.map(e => textOf(e)), ['暂无会话', '暂无会话', '暂无会话'])
-  assert.equal(textOf(findAll(tree, 'ctb-footer')[0]), '0 条会话完成后移出面板，不会删除原会话')
+  assert.equal(textOf(findAll(tree, 'dtb-footer')[0]), '0 条会话完成后移出面板，不会删除原会话')
 })
 
 // -- cards ------------------------------------------------------------------
 
 test('sessions land in the right columns from live host facts', () => {
   const tree = harness().tree
-  const byStatus = Object.fromEntries(findAll(tree, 'ctb-column').map(column => [
+  const byStatus = Object.fromEntries(findAll(tree, 'dtb-column').map(column => [
     column.props['data-status'],
-    findAll(column, 'ctb-card').map(card => textOf(findAll(card, 'ctb-card-project')[0])),
+    findAll(column, 'dtb-card').map(card => textOf(findAll(card, 'dtb-card-project')[0])),
   ]))
   assert.deepEqual(byStatus.todo, ['gamma'])
   assert.deepEqual(byStatus.doing, ['alpha'])
@@ -309,38 +309,38 @@ test('sessions land in the right columns from live host facts', () => {
 
 test('a doing card carries the pause control, other cards do not', () => {
   const tree = harness().tree
-  const doing = findAll(tree, 'ctb-column').find(c => c.props['data-status'] === 'doing')
-  const control = findAll(doing, 'ctb-task-control')
+  const doing = findAll(tree, 'dtb-column').find(c => c.props['data-status'] === 'doing')
+  const control = findAll(doing, 'dtb-task-control')
   assert.equal(control.length, 1)
   assert.equal(textOf(control[0]), 'Ⅱ 暂停')
   assert.equal(control[0].props['data-paused'], 'false')
   assert.equal(control[0].props.title, '中断当前一轮，并留在处理中')
 
-  const todo = findAll(tree, 'ctb-column').find(c => c.props['data-status'] === 'todo')
-  assert.equal(findAll(todo, 'ctb-task-control').length, 0)
+  const todo = findAll(tree, 'dtb-column').find(c => c.props['data-status'] === 'todo')
+  assert.equal(findAll(todo, 'dtb-task-control').length, 0)
 })
 
 test('every card carries the original anatomy and status note', () => {
-  const cards = findAll(harness().tree, 'ctb-card')
+  const cards = findAll(harness().tree, 'dtb-card')
   assert.equal(cards.length, 3)
   for (const card of cards) {
-    assert.equal(textOf(findAll(card, 'ctb-card-priority')[0]), '☆')
-    assert.equal(textOf(findAll(card, 'ctb-card-remove')[0]), '✓')
-    assert.equal(findAll(card, 'ctb-unread-dot').length, 1)
-    assert.equal(findAll(card, 'ctb-card-note').length, 1)
-    assert.equal(findAll(card, 'ctb-work-duration').length, 1)
-    assert.equal(findAll(card, 'ctb-card-title-row').length, 1)
-    assert.equal(findAll(card, 'ctb-card-meta').length, 1)
-    assert.equal(findAll(card, 'ctb-card-work-row').length, 1)
+    assert.equal(textOf(findAll(card, 'dtb-card-priority')[0]), '☆')
+    assert.equal(textOf(findAll(card, 'dtb-card-remove')[0]), '✓')
+    assert.equal(findAll(card, 'dtb-unread-dot').length, 1)
+    assert.equal(findAll(card, 'dtb-card-note').length, 1)
+    assert.equal(findAll(card, 'dtb-work-duration').length, 1)
+    assert.equal(findAll(card, 'dtb-card-title-row').length, 1)
+    assert.equal(findAll(card, 'dtb-card-meta').length, 1)
+    assert.equal(findAll(card, 'dtb-card-work-row').length, 1)
     assert.equal(card.props.title, '打开原始会话')
     assert.equal(card.props.tabIndex, 0)
     assert.equal(card.props['data-unread'], 'true')
   }
   // Cards are collected in column order (todo, doing, review), which is also
   // the original's left-to-right reading order.
-  const notes = cards.map(card => textOf(findAll(card, 'ctb-card-note')[0]))
+  const notes = cards.map(card => textOf(findAll(card, 'dtb-card-note')[0]))
   assert.deepEqual(notes, ['尚未开始', 'DSH 正在处理', '已停止运行，等待你检查'])
-  const titles = cards.map(card => textOf(findAll(card, 'ctb-card-title-row')[0].props.children[1]))
+  const titles = cards.map(card => textOf(findAll(card, 'dtb-card-title-row')[0].props.children[1]))
   assert.deepEqual(titles, ['Idle session', 'Running session', 'Finished session'])
 })
 
@@ -351,13 +351,13 @@ test('a priority card carries the palette style variables', () => {
   first.priority = true
   first.priorityColor = 'teal'
   const tree = h.render()
-  const card = findAll(tree, 'ctb-card').find(c => c.props['data-priority'] === 'true')
+  const card = findAll(tree, 'dtb-card').find(c => c.props['data-priority'] === 'true')
   assert.ok(card, 'the starred card must render data-priority=true')
   assert.equal(card.props['data-priority-color'], 'teal')
   assert.equal(card.props.style['--tb-priority-color'], '#61aaa4')
   assert.equal(card.props.style['--tb-priority-accent'], '#8dc5bf')
   assert.equal(card.props.style['--tb-priority-angle'], '128deg')
-  assert.equal(textOf(findAll(card, 'ctb-card-priority')[0]), '★')
+  assert.equal(textOf(findAll(card, 'dtb-card-priority')[0]), '★')
 })
 
 test('an unread card shows the dot and a read one hides it', () => {
@@ -365,10 +365,10 @@ test('an unread card shows the dot and a read one hides it', () => {
   // Mark the running session read.
   h.injected.store.current.items.run.panelReadAt = NOW + 1000
   const tree = h.render()
-  const cards = findAll(tree, 'ctb-card')
+  const cards = findAll(tree, 'dtb-card')
   const unreadFlags = cards.map(card => card.props['data-unread'])
   assert.equal(unreadFlags.filter(f => f === 'false').length, 1)
-  const readDot = findAll(cards.find(c => c.props['data-unread'] === 'false'), 'ctb-unread-dot')[0]
+  const readDot = findAll(cards.find(c => c.props['data-unread'] === 'false'), 'dtb-unread-dot')[0]
   assert.equal(readDot.props['data-unread'], 'false')
 })
 
@@ -377,22 +377,22 @@ test('an unread card shows the dot and a read one hides it', () => {
 test('the search box filters cards but keeps the column totals', () => {
   const h = harness()
   // Type into the panel search, then re-render with the new query state.
-  findAll(h.tree, 'ctb-search')[0].props.children[1].props.onChange({ target: { value: 'alpha' } })
+  findAll(h.tree, 'dtb-search')[0].props.children[1].props.onChange({ target: { value: 'alpha' } })
   const second = h.render()
-  const visible = findAll(second, 'ctb-card')
+  const visible = findAll(second, 'dtb-card')
   assert.equal(visible.length, 1, 'only the alpha session matches')
-  assert.equal(textOf(findAll(visible[0], 'ctb-card-project')[0]), 'alpha')
+  assert.equal(textOf(findAll(visible[0], 'dtb-card-project')[0]), 'alpha')
   // The column pills still count every item of the status, filtered or not —
   // exactly as the original did (the totals never follow the query).
-  assert.deepEqual(findAll(second, 'ctb-count').map(c => textOf(c)), ['1', '1', '1'])
+  assert.deepEqual(findAll(second, 'dtb-count').map(c => textOf(c)), ['1', '1', '1'])
 })
 
 test('a search that matches nothing shows the filtered empty state', () => {
   const h = harness()
-  findAll(h.tree, 'ctb-search')[0].props.children[1].props.onChange({ target: { value: 'zzzz' } })
+  findAll(h.tree, 'dtb-search')[0].props.children[1].props.onChange({ target: { value: 'zzzz' } })
   const tree = h.render()
-  assert.equal(findAll(tree, 'ctb-card').length, 0)
-  assert.deepEqual(findAll(tree, 'ctb-empty').map(e => textOf(e)),
+  assert.equal(findAll(tree, 'dtb-card').length, 0)
+  assert.deepEqual(findAll(tree, 'dtb-empty').map(e => textOf(e)),
     ['没有匹配的会话', '没有匹配的会话', '没有匹配的会话'])
 })
 
@@ -402,25 +402,25 @@ test('the picker excludes subagent children and blank drafts', () => {
   snapshot.byId.draft = { id: 'draft', title: 'New session', displayTitle: 'New session', cwd: 'D:\\work\\alpha', running: false, blank: true, updatedAt: NOW }
   snapshot.byId.child = { id: 'child', title: 'Subagent', displayTitle: 'Subagent', cwd: 'D:\\work\\alpha', running: false, blank: false, origin: 'subagent', updatedAt: NOW }
   const h = harness(snapshot)
-  findAll(h.tree, 'ctb-button-primary')[0].props.onClick()
+  findAll(h.tree, 'dtb-button-primary')[0].props.onClick()
   const tree = h.render()
-  const rows = findAll(tree, 'ctb-picker-row')
-  const titles = rows.map(r => textOf(findAll(r, 'ctb-picker-title')[0]))
+  const rows = findAll(tree, 'dtb-picker-row')
+  const titles = rows.map(r => textOf(findAll(r, 'dtb-picker-title')[0]))
   assert.deepEqual(titles, ['Running session', 'Finished session', 'Idle session'])
   assert.ok(!titles.includes('New session'), 'a blank draft must not be offered')
   assert.ok(!titles.includes('Subagent'), 'a subagent child must not be offered')
   // The picker renders the original copy.
-  assert.equal(textOf(findAll(tree, 'ctb-picker-head')[0]), '添加 DSH 会话×')
-  assert.equal(textOf(findAll(tree, 'ctb-picker-copy')[0]), '搜索所有项目中的旧会话，选择后加入任务面板。')
+  assert.equal(textOf(findAll(tree, 'dtb-picker-head')[0]), '添加 DSH 会话×')
+  assert.equal(textOf(findAll(tree, 'dtb-picker-copy')[0]), '搜索所有项目中的旧会话，选择后加入任务面板。')
   // Every offered session is already on the board, so each row reads 已加入.
-  assert.equal(textOf(findAll(rows[0], 'ctb-picker-add')[0]), '已加入')
+  assert.equal(textOf(findAll(rows[0], 'dtb-picker-add')[0]), '已加入')
 })
 
 test('a tracked session shows 已加入 and cannot be added twice', () => {
   const h = harness()
-  findAll(h.tree, 'ctb-button-primary')[0].props.onClick()
+  findAll(h.tree, 'dtb-button-primary')[0].props.onClick()
   const tree = h.render()
-  const addButtons = findAll(tree, 'ctb-picker-add')
+  const addButtons = findAll(tree, 'dtb-picker-add')
   assert.equal(addButtons.length, 3)
   for (const button of addButtons) {
     assert.equal(textOf(button), '已加入')
@@ -430,26 +430,26 @@ test('a tracked session shows 已加入 and cannot be added twice', () => {
 
 test('completing a card removes it and offers a single-level undo', () => {
   const h = harness()
-  const before = findAll(h.tree, 'ctb-card').length
-  const removeButton = findAll(h.tree, 'ctb-card-remove')[0]
+  const before = findAll(h.tree, 'dtb-card').length
+  const removeButton = findAll(h.tree, 'dtb-card-remove')[0]
   removeButton.props.onClick({ stopPropagation() {} })
   const afterRemove = h.render()
-  assert.equal(findAll(afterRemove, 'ctb-card').length, before - 1)
-  assert.equal(textOf(findAll(afterRemove, 'ctb-toast')[0]), '已从面板移出，原会话仍保留撤销')
+  assert.equal(findAll(afterRemove, 'dtb-card').length, before - 1)
+  assert.equal(textOf(findAll(afterRemove, 'dtb-toast')[0]), '已从面板移出，原会话仍保留撤销')
 
-  const undo = findAll(afterRemove, 'ctb-toast')[0].props.children[1]
+  const undo = findAll(afterRemove, 'dtb-toast')[0].props.children[1]
   undo.props.onClick()
   const afterUndo = h.render()
-  assert.equal(findAll(afterUndo, 'ctb-card').length, before)
-  assert.equal(findAll(afterUndo, 'ctb-toast').length, 0)
+  assert.equal(findAll(afterUndo, 'dtb-card').length, before)
+  assert.equal(findAll(afterUndo, 'dtb-toast').length, 0)
 })
 
 test('starring a card assigns a colour from the palette', () => {
   const h = harness()
-  const star = findAll(h.tree, 'ctb-card-priority')[0]
+  const star = findAll(h.tree, 'dtb-card-priority')[0]
   star.props.onClick({ stopPropagation() {} })
   const tree = h.render()
-  const starred = findAll(tree, 'ctb-card').find(c => c.props['data-priority'] === 'true')
+  const starred = findAll(tree, 'dtb-card').find(c => c.props['data-priority'] === 'true')
   assert.ok(starred, 'the clicked card must be starred')
   const colorKey = starred.props['data-priority-color']
   assert.ok(Object.hasOwn({ gold: 1, red: 1, blue: 1, green: 1, purple: 1, cyan: 1, orange: 1, pink: 1, lime: 1, indigo: 1, teal: 1, magenta: 1, coral: 1, mint: 1, azure: 1, slate: 1 }, colorKey),

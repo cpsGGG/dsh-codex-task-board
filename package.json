@@ -1,5 +1,5 @@
 {
-  "name": "dsh-codex-task-board",
+  "name": "dsh-task-board",
   "version": "1.0.0",
   "description": "Cross-project task board for DeepSeek Harness: every DSH session becomes a task card across 待处理 / 处理中 / 待审阅, with priority colours, stable ordering and one-page adaptive layout.",
   "type": "module",
@@ -14,13 +14,13 @@
     "sessions",
     "sidebar"
   ],
-  "homepage": "https://github.com/cpsGGG/dsh-codex-task-board#readme",
+  "homepage": "https://github.com/cpsGGG/dsh-task-board#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cpsGGG/dsh-codex-task-board.git"
+    "url": "git+https://github.com/cpsGGG/dsh-task-board.git"
   },
   "bugs": {
-    "url": "https://github.com/cpsGGG/dsh-codex-task-board/issues"
+    "url": "https://github.com/cpsGGG/dsh-task-board/issues"
   },
   "main": "lib/index.js",
   "exports": {

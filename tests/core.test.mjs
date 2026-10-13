@@ -1,11 +1,10 @@
 /**
- * Core-logic tests for the task board port.
+ * Core-logic tests for the task board.
  *
- * The expectations are the original project's own fixtures
- * (`codex-task-board-mod/tests/*.test.mjs`), re-pointed at the DSH session
- * model. Where the original asserted a Codex-specific input (a `thread` with a
- * `status.type`), the equivalent DSH facts (`running` / `pending` / `error`)
- * are asserted instead — the output contract is identical.
+ * The expectations carry over the author's earlier fixtures, re-pointed at the
+ * DSH session model: where those asserted a `thread` with a `status.type`, the
+ * equivalent DSH facts (`running` / `completed` / `pending` / `error`) are
+ * asserted instead — the output contract is the same.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'

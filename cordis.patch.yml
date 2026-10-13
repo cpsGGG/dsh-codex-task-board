@@ -4,5 +4,5 @@
 # job is to give the host Loader a row to mount, so the client-modules scan can
 # discover `dsh.client` and serve `lib/client.js` to the web shell.
 - insert:
-    - id: codex-task-board
-      name: 'dsh-codex-task-board'
+    - id: task-board
+      name: 'dsh-task-board'

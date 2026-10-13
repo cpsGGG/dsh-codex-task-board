@@ -1,11 +1,11 @@
 First public release. A cross-project **task board** for DeepSeek Harness: every DSH session becomes a task card across **待处理 / 处理中 / 待审阅**.
 
-![Task board — dark](https://raw.githubusercontent.com/cpsGGG/dsh-codex-task-board/main/preview/board-dark.png)
+![Task board — dark](https://raw.githubusercontent.com/cpsGGG/dsh-task-board/main/preview/board-dark.png)
 
 ## Install
 
 ```sh
-dsh plugin --profile <your-profile> add git+https://github.com/cpsGGG/dsh-codex-task-board.git#v1.0.0
+dsh plugin --profile <your-profile> add git+https://github.com/cpsGGG/dsh-task-board.git#v1.0.0
 ```
 
 Then restart DSH and open **任务面板** at the bottom of the sidebar.
@@ -34,9 +34,9 @@ The board registers into the shell's own global-panel seats — `sidebar.panelli
 
 ## Notes
 
-Two behaviours differ from the private Codex panel this was ported from, both forced by DSH's session model:
+Two behaviours are constrained by DSH's session model:
 
-1. **Resume sends a real message** — DSH rejects empty prompts and has no session-level resume, so the card sends a minimal instruction (`继续`) instead of an empty turn.
-2. **Blank sessions stay off the board** — DSH reuses one empty New-session draft per workspace.
+1. **Resume sends a real message** — DSH rejects empty prompts and has no session-level resume, so the card sends a minimal instruction (`继续`).
+2. **Blank sessions stay off the board** — DSH reuses one empty New-session draft per workspace, so it is a scratch slot rather than a task.
 
-MIT licensed. Not affiliated with DeepSeek AI or OpenAI.
+MIT licensed. Not affiliated with DeepSeek AI.

@@ -1,25 +1,23 @@
 /**
- * Task board core: the pure, framework-free half of the Codex task board.
+ * Task board core: the pure, framework-free half of the board.
  *
- * Everything here is a direct port of `codex-task-board-mod@0.5.8`
- * `src/injected-board.js` — the same constants, the same precedence rules, the
- * same arithmetic — with the Codex thread model replaced by the DSH session
- * model. Nothing in this file touches the DOM, React, or a Cordis context, so
- * every rule below is unit-testable in plain Node.
+ * Nothing here touches the DOM, React, or a Cordis context, so every rule
+ * below — status precedence, ordering, layout arithmetic, colour balancing —
+ * is unit-testable in plain Node.
  *
- * Model mapping (Codex → DSH):
+ * The board's rules are carried over from an earlier panel of the author's,
+ * re-expressed against the DSH session model:
  *   thread.id / createdAt / cwd / name   → session.id / createdAt / cwd / title
  *   thread.updatedAt                     → session.updatedAt   (epoch ms)
  *   thread.status.type                   → derived from `running` + turn end
  *   thread/turns/list nativeTurn         → session event window turn timings
- *   electronBridge.sendMessageFromView   → ctx.sessions / session.prompt
  */
 
 // ---------------------------------------------------------------------------
-// Constants (verbatim from injected-board.js lines 4-58)
+// Constants
 // ---------------------------------------------------------------------------
 
-export const MOD_ID = 'codex-task-board'
+export const MOD_ID = 'dsh-task-board'
 export const MOD_VERSION = '1.0.0'
 
 export const PRIORITY_COLORS = {
@@ -42,7 +40,7 @@ export const PRIORITY_ANGLES = {
 }
 
 /** The one storage key; the profile's own localStorage namespace is the store. */
-export const STORAGE_KEY = 'codex-task-board:session-state:v3'
+export const STORAGE_KEY = 'dsh-task-board:session-state:v3'
 
 /** Board panel id: the `main` slot key and the `sidebar.panellist` list id. */
 export const PANEL_ID = 'task-board'
@@ -465,8 +463,8 @@ export function applyTurnTiming(store, id, turn) {
  * Fold one session's event window into a native turn timing.
  *
  * `turn/start` and `turn/end` both carry epoch-ms `time`; a turn with no
- * `turn/end` yet is running. The interruption reason is DSH's equivalent of
- * Codex's `interrupted` status.
+ * `turn/end` yet is running. An aborted or interrupted reason maps to the
+ * `interrupted` status the card renders as 停止前用时.
  *
  * @param entries - the session event window entries.
  * @returns a `nativeTurn` record, or null when the window has no turn.

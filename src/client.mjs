@@ -12,8 +12,8 @@
  * an overlay: selecting it swaps the centre column, and selecting `null`
  * returns to the Conversation without changing the current Session.
  *
- * All copy, geometry and colour mixing come from the Codex original; the data
- * comes from DSH's `useSessions` feed instead of Codex's app-server bridge.
+ * The board's copy, geometry and colour mixing are the author's own; the data
+ * comes from DSH's `useSessions` feed and the session event windows.
  */
 
 import React from 'react'
@@ -29,7 +29,7 @@ import {
 // Copy (exact strings from the original board)
 // ---------------------------------------------------------------------------
 
-const NS = 'codex-task-board'
+const NS = 'dsh-task-board'
 
 const zh = {
   panel: '任务面板',
@@ -153,7 +153,7 @@ function searchIcon() {
 function BoardIcon(props) {
   const size = props?.size ?? 18
   return React.createElement('svg', {
-    className: 'ctb-panel-icon',
+    className: 'dtb-panel-icon',
     width: size, height: size, viewBox: '0 0 24 24',
     fill: 'none', stroke: 'currentColor', strokeWidth: 1.75,
     strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': 'true',
@@ -265,7 +265,7 @@ class BoardBoundary extends React.Component {
 
   componentDidCatch(error) {
     // eslint-disable-next-line no-console
-    console.error('[codex-task-board] panel crashed:', error)
+    console.error('[dsh-task-board] panel crashed:', error)
   }
 
   render() {
@@ -278,7 +278,7 @@ class BoardBoundary extends React.Component {
           margin: 0, padding: '16px 20px', color: '#ff8a86',
           font: '12px/1.6 ui-monospace, monospace', whiteSpace: 'pre-wrap', overflow: 'auto',
         },
-      }, `codex-task-board panel crashed:\n\n${detail}`)
+      }, `dsh-task-board panel crashed:\n\n${detail}`)
     }
     return this.props.children
   }
@@ -375,7 +375,7 @@ function BoardPanel(props) {
     if (key === layoutKey.current) return
     layoutKey.current = key
 
-    const columns = [...board.querySelectorAll('.ctb-column')]
+    const columns = [...board.querySelectorAll('.dtb-column')]
     const base = adaptiveBoardLayout(visible, width, height)
     const write = (lanes, density) => {
       board.dataset.density = density
@@ -399,9 +399,9 @@ function BoardPanel(props) {
         let busiest = -1
         let tallest = 0
         columns.forEach((column, index) => {
-          const list = column.querySelector('.ctb-list')
+          const list = column.querySelector('.dtb-list')
           const h = list ? list.getBoundingClientRect().height : 0
-          const count = column.querySelectorAll('.ctb-card').length
+          const count = column.querySelectorAll('.dtb-card').length
           if (count > lanes[index] && h > tallest) { busiest = index; tallest = h }
         })
         if (busiest < 0) break
@@ -516,15 +516,11 @@ function BoardPanel(props) {
   /**
    * Resume a paused card.
    *
-   * The Codex original sent `thread/resume` + an empty `turn/start`, i.e.
-   * "continue without adding a user message". DSH has no such verb: `prompt`
-   * rejects content with no non-whitespace text (the gateway's
-   * `hasPromptContent` guard), and there is no session-level resume.
-   *
-   * The faithful equivalent is therefore a real, minimal instruction rather
-   * than a fabricated empty turn: the card leaves `manualPaused`, the session
-   * runs, and the message is visible in the transcript — which is what the
-   * original's empty turn achieved observably, minus the invisible turn.
+   * DSH offers no "continue without a message" verb: `prompt` rejects content
+   * with no non-whitespace text (the gateway's `hasPromptContent` guard), and
+   * there is no session-level resume. So the card sends a real, minimal
+   * instruction instead of a fabricated empty turn: it leaves `manualPaused`,
+   * the session runs, and the message is visible in the transcript.
    */
   const resumeTask = React.useCallback((id) => withBusy(id, async () => {
     const item = store.current.items[id]
@@ -586,26 +582,26 @@ function BoardPanel(props) {
 
   const total = all.length
 
-  return React.createElement('div', { className: 'ctb-panel', onKeyDown }, [
-    React.createElement('header', { className: 'ctb-header', key: 'header' }, [
-      React.createElement('div', { className: 'ctb-heading', key: 'h' }, [
+  return React.createElement('div', { className: 'dtb-panel', onKeyDown }, [
+    React.createElement('header', { className: 'dtb-header', key: 'header' }, [
+      React.createElement('div', { className: 'dtb-heading', key: 'h' }, [
         React.createElement('h1', { key: 't' }, t('heading')),
         React.createElement('span', { key: 's' }, t('subheading')),
       ]),
-      React.createElement('div', { className: 'ctb-actions', key: 'a' }, [
+      React.createElement('div', { className: 'dtb-actions', key: 'a' }, [
         React.createElement('button', {
-          key: 'add', type: 'button', className: 'ctb-button ctb-button-primary',
+          key: 'add', type: 'button', className: 'dtb-button dtb-button-primary',
           onClick: () => { setPickerOpen(true); setPickerQuery('') },
         }, t('add')),
         React.createElement('button', {
-          key: 'close', type: 'button', className: 'ctb-button ctb-button-icon',
+          key: 'close', type: 'button', className: 'dtb-button dtb-button-icon',
           'aria-label': t('close'), onClick: () => ctx.layout.selectPanel(null),
         }, '×'),
       ]),
     ]),
 
-    React.createElement('div', { className: 'ctb-toolbar', key: 'toolbar' }, [
-      React.createElement('label', { className: 'ctb-search', key: 'search' }, [
+    React.createElement('div', { className: 'dtb-toolbar', key: 'toolbar' }, [
+      React.createElement('label', { className: 'dtb-search', key: 'search' }, [
         searchIcon(),
         React.createElement('input', {
           key: 'i', type: 'search', value: query,
@@ -614,15 +610,15 @@ function BoardPanel(props) {
         }),
       ]),
       React.createElement('span', {
-        className: 'ctb-connection', key: 'conn', 'data-state': connection,
+        className: 'dtb-connection', key: 'conn', 'data-state': connection,
       }, connection === 'ok' && lastSyncAt
         ? `${t('synced')} · ${new Date(lastSyncAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`
         : t(connection === 'error' ? 'failed' : 'connecting')),
     ]),
 
-    React.createElement('div', { className: 'ctb-board-scroll', key: 'scroll', ref: scrollRef },
+    React.createElement('div', { className: 'dtb-board-scroll', key: 'scroll', ref: scrollRef },
       React.createElement('div', {
-        className: 'ctb-board', ref: boardRef,
+        className: 'dtb-board', ref: boardRef,
         'data-density': layout.density,
         style: { '--tb-total-lanes': String(layout.totalLanes) },
       }, STATUS.map((column, index) => {
@@ -630,45 +626,45 @@ function BoardPanel(props) {
         const columnTotal = all.filter(item => item.status === column.id).length
         const lanes = layout.lanes[index]
         return React.createElement('section', {
-          key: column.id, className: 'ctb-column',
+          key: column.id, className: 'dtb-column',
           'data-status': column.id, 'data-lanes': String(lanes),
           style: { '--tb-color': column.color, '--tb-lanes': String(lanes) },
         }, [
-          React.createElement('div', { className: 'ctb-column-head', key: 'head' },
-            React.createElement('div', { className: 'ctb-column-title' }, [
-              React.createElement('span', { className: 'ctb-dot', key: 'dot' }),
+          React.createElement('div', { className: 'dtb-column-head', key: 'head' },
+            React.createElement('div', { className: 'dtb-column-title' }, [
+              React.createElement('span', { className: 'dtb-dot', key: 'dot' }),
               React.createElement('h2', { key: 'n' }, column.name),
-              React.createElement('span', { className: 'ctb-count', key: 'c' }, String(columnTotal)),
+              React.createElement('span', { className: 'dtb-count', key: 'c' }, String(columnTotal)),
             ])),
-          React.createElement('p', { className: 'ctb-column-hint', key: 'hint' }, column.hint),
-          React.createElement('div', { className: 'ctb-list', key: 'list' },
+          React.createElement('p', { className: 'dtb-column-hint', key: 'hint' }, column.hint),
+          React.createElement('div', { className: 'dtb-list', key: 'list' },
             items.length
               ? items.map(item => cardNode(item))
-              : React.createElement('div', { className: 'ctb-empty', key: 'empty' },
+              : React.createElement('div', { className: 'dtb-empty', key: 'empty' },
                 query ? t('noMatch') : t('empty'))),
         ])
       }))),
 
-    React.createElement('footer', { className: 'ctb-footer', key: 'footer' }, [
+    React.createElement('footer', { className: 'dtb-footer', key: 'footer' }, [
       React.createElement('span', { key: 'c' }, `${total} ${t('total')}`),
       React.createElement('span', { key: 'n' }, t('footerNote')),
     ]),
 
     pickerOpen && React.createElement('div', {
-      className: 'ctb-modal-layer', key: 'modal', 'data-open': 'true',
+      className: 'dtb-modal-layer', key: 'modal', 'data-open': 'true',
       onClick: event => { if (event.target === event.currentTarget) setPickerOpen(false) },
     }, React.createElement('section', {
-      className: 'ctb-picker', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('pickerTitle'),
+      className: 'dtb-picker', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('pickerTitle'),
     }, [
-      React.createElement('header', { className: 'ctb-picker-head', key: 'ph' }, [
+      React.createElement('header', { className: 'dtb-picker-head', key: 'ph' }, [
         React.createElement('h2', { key: 't' }, t('pickerTitle')),
         React.createElement('button', {
-          key: 'x', type: 'button', className: 'ctb-button ctb-button-icon',
+          key: 'x', type: 'button', className: 'dtb-button dtb-button-icon',
           'aria-label': t('close'), onClick: () => setPickerOpen(false),
         }, '×'),
       ]),
-      React.createElement('div', { className: 'ctb-picker-copy', key: 'pc' }, t('pickerCopy')),
-      React.createElement('label', { className: 'ctb-search ctb-picker-search', key: 'ps' }, [
+      React.createElement('div', { className: 'dtb-picker-copy', key: 'pc' }, t('pickerCopy')),
+      React.createElement('label', { className: 'dtb-search dtb-picker-search', key: 'ps' }, [
         searchIcon(),
         React.createElement('input', {
           key: 'i', type: 'search', value: pickerQuery, autoFocus: true,
@@ -676,15 +672,15 @@ function BoardPanel(props) {
           onChange: event => setPickerQuery(event.target.value),
         }),
       ]),
-      React.createElement('div', { className: 'ctb-picker-results', key: 'pr' },
+      React.createElement('div', { className: 'dtb-picker-results', key: 'pr' },
         pickerRows.length
           ? pickerRows.map(row => {
             const id = String(row.id)
             const tracked = Boolean(store.current.items[id])
-            return React.createElement('div', { className: 'ctb-picker-row', key: id }, [
+            return React.createElement('div', { className: 'dtb-picker-row', key: id }, [
               React.createElement('div', { key: 'd' }, [
-                React.createElement('div', { className: 'ctb-picker-title', key: 't' }, sessionTitle(row)),
-                React.createElement('div', { className: 'ctb-picker-project', key: 'p' }, [
+                React.createElement('div', { className: 'dtb-picker-title', key: 't' }, sessionTitle(row)),
+                React.createElement('div', { className: 'dtb-picker-project', key: 'p' }, [
                   React.createElement('span', { key: 'a' }, projectName(row.cwd || '')),
                   React.createElement('span', { key: 'b' }, '·'),
                   React.createElement('span', { key: 'c', title: row.cwd || '' }, row.cwd || '未指定路径'),
@@ -694,17 +690,17 @@ function BoardPanel(props) {
               ]),
               React.createElement('button', {
                 key: 'add', type: 'button',
-                className: 'ctb-button ctb-picker-add',
+                className: 'dtb-button dtb-picker-add',
                 disabled: tracked,
                 onClick: () => addFromPicker(id),
               }, tracked ? t('joined') : store.current.dismissed[id] ? t('rejoin') : t('join')),
             ])
           })
-          : React.createElement('div', { className: 'ctb-picker-state' },
+          : React.createElement('div', { className: 'dtb-picker-state' },
             pickerQuery.trim() ? t('pickerNoMatch') : t('pickerEmpty'))),
     ])),
 
-    toast && React.createElement('div', { className: 'ctb-toast', key: 'toast' }, [
+    toast && React.createElement('div', { className: 'dtb-toast', key: 'toast' }, [
       React.createElement('span', { key: 'm' }, toast.message),
       toast.undoable && React.createElement('button', {
         key: 'u', type: 'button', onClick: undoRemove,
@@ -719,7 +715,7 @@ function BoardPanel(props) {
     const colorKey = priorityColor(item.priorityColor)
     const taskControl = item.status === 'doing'
       ? React.createElement('button', {
-        className: 'ctb-task-control',
+        className: 'dtb-task-control',
         'data-paused': String(item.manualPaused === true),
         disabled: controlBusy,
         'aria-label': item.manualPaused ? t('resume') : t('pause'),
@@ -734,7 +730,7 @@ function BoardPanel(props) {
 
     return React.createElement('article', {
       key: item.id,
-      className: 'ctb-card',
+      className: 'dtb-card',
       tabIndex: 0,
       'data-unread': String(unread),
       'data-priority': String(item.priority === true),
@@ -754,38 +750,38 @@ function BoardPanel(props) {
       },
     }, [
       React.createElement('button', {
-        key: 'star', type: 'button', className: 'ctb-card-priority',
+        key: 'star', type: 'button', className: 'dtb-card-priority',
         'aria-pressed': String(item.priority === true),
         'aria-label': item.priority ? t('starOff') : t('starOn'),
         title: item.priority ? t('starOff') : t('starOn'),
         onClick: event => { event.stopPropagation(); togglePriority(item.id) },
       }, item.priority ? '★' : '☆'),
       React.createElement('button', {
-        key: 'done', type: 'button', className: 'ctb-card-remove',
+        key: 'done', type: 'button', className: 'dtb-card-remove',
         'aria-label': t('doneLabel'), title: t('doneLabel'),
         onClick: event => { event.stopPropagation(); removeSession(item.id) },
       }, '✓'),
-      React.createElement('div', { className: 'ctb-card-title-row', key: 'title' }, [
+      React.createElement('div', { className: 'dtb-card-title-row', key: 'title' }, [
         React.createElement('span', {
-          key: 'dot', className: 'ctb-unread-dot', 'data-unread': String(unread),
+          key: 'dot', className: 'dtb-unread-dot', 'data-unread': String(unread),
           'aria-label': unread ? t('unread') : t('read'),
           title: unread ? t('unreadHint') : t('readHint'),
         }),
         React.createElement('h3', { key: 'h' }, item.title),
       ]),
       React.createElement('div', {
-        className: 'ctb-card-project', key: 'project', title: item.cwd || '未指定路径',
+        className: 'dtb-card-project', key: 'project', title: item.cwd || '未指定路径',
       }, item.project),
-      React.createElement('div', { className: 'ctb-card-meta', key: 'meta' }, [
+      React.createElement('div', { className: 'dtb-card-meta', key: 'meta' }, [
         React.createElement('span', {
-          key: 'note', className: 'ctb-card-note',
+          key: 'note', className: 'dtb-card-note',
           'data-error': String(item.lastRuntimeType === 'systemError'),
         }, statusNote(item)),
         React.createElement('span', { key: 'time' }, relativeTime(item.updatedAt)),
       ]),
-      React.createElement('div', { className: 'ctb-card-work-row', key: 'work' }, [
+      React.createElement('div', { className: 'dtb-card-work-row', key: 'work' }, [
         React.createElement('div', {
-          key: 'd', className: 'ctb-work-duration', title: t('workHint'),
+          key: 'd', className: 'dtb-work-duration', title: t('workHint'),
         }, workDurationLabel(item)),
         taskControl,
       ]),
@@ -810,7 +806,7 @@ export const inject = ['slots', 'layout', 'locale', 'sessions', 'uiWorkspace']
  * @param ctx - client root context.
  */
 export function apply(ctx) {
-  ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'codex-task-board: dictionaries')
+  ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'dsh-task-board: dictionaries')
   const t = ctx.locale.bind(NS)
 
   // The board's memory lives across panel unmounts, so the store is one

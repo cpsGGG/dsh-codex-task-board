@@ -1,4 +1,4 @@
-# dsh-codex-task-board
+# dsh-task-board
 
 A cross-project **task board** for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — every DSH session becomes a task card, grouped into three columns: **待处理 / 处理中 / 待审阅** (To do / In progress / Needs review).
 
@@ -25,7 +25,7 @@ The board is a first-class DSH destination, not an overlay: it registers into th
 Install straight from GitHub — this is the supported path, and the only one that works today (the package is not on npm yet):
 
 ```sh
-dsh plugin --profile <your-profile> add git+https://github.com/cpsGGG/dsh-codex-task-board.git
+dsh plugin --profile <your-profile> add git+https://github.com/cpsGGG/dsh-task-board.git
 ```
 
 Then restart DSH and open **任务面板** at the bottom of the sidebar.
@@ -36,15 +36,15 @@ Then restart DSH and open **任务面板** at the bottom of the sidebar.
 **From a local clone** (best if you want to edit the source):
 
 ```sh
-git clone https://github.com/cpsGGG/dsh-codex-task-board.git
-dsh plugin --profile <your-profile> add ./dsh-codex-task-board
+git clone https://github.com/cpsGGG/dsh-task-board.git
+dsh plugin --profile <your-profile> add ./dsh-task-board
 ```
 
 **Pinned to a tag or commit** — recommended once versions are tagged, so an
 upstream change cannot surprise you:
 
 ```sh
-dsh plugin --profile <your-profile> add git+https://github.com/cpsGGG/dsh-codex-task-board.git#v1.0.0
+dsh plugin --profile <your-profile> add git+https://github.com/cpsGGG/dsh-task-board.git#v1.0.0
 ```
 
 `lib/client.js` is committed, so **no build step and no install scripts run** —
@@ -54,7 +54,7 @@ otherwise trip pnpm's `allowBuilds` prompt on a git install. If you change
 
 > **Windows note:** pnpm installs `file:` dependencies as a *copy*, not a
 > symlink. When developing against a local checkout, point the profile's
-> `node_modules/dsh-codex-task-board` at your working tree with a directory
+> `node_modules/dsh-task-board` at your working tree with a directory
 > junction instead, or re-run the install after every build.
 
 </details>
@@ -81,7 +81,7 @@ DSH has no DOM to patch — it has slots. So this is a native plugin rather than
 | Session data | the `useSessions` global standard prop |
 | Turn duration | `ctx.sessions.binding(id).eventSource` folded over `turn/start` / `turn/end` |
 | Pause / resume | `ISession.cancel()` / `ISession.prompt()` |
-| Persistence | `localStorage`, key `codex-task-board:session-state:v3` |
+| Persistence | `localStorage`, key `dsh-task-board:session-state:v3` |
 
 `src/core.mjs` is deliberately framework-free — no DOM, no React, no Cordis — so every rule (status precedence, ordering, layout arithmetic, colour balancing) is unit-testable in plain Node.
 
@@ -115,15 +115,13 @@ The render tests are worth knowing about: they load `lib/client.js`, drive the s
 
 A screenshot of a real board leaks whatever the maintainer had open. `tools/make-preview.mjs` renders the same component against a fixed cast of fictional sessions, so the artifact is reproducible and safe to publish.
 
-## Differences from the original Codex panel
+## Behaviour notes
 
-This is a port of a private Codex panel (`codex-task-board-mod@0.5.8`) that injected DOM into the Codex desktop app. Two behaviours had to change because DSH's session model differs:
+Two behaviours are worth knowing about, because DSH's session model constrains them:
 
-1. **"Resume" sends a real message.** The original sent `thread/resume` plus an *empty* `turn/start` — "continue without appending a user message". DSH has no such verb: `prompt` rejects content with no non-whitespace text (the gateway's `hasPromptContent` guard), and there is no session-level resume. This port therefore sends a minimal real instruction (`继续`). The card leaves the paused state and starts running exactly as before; the difference is that the message is visible in the transcript.
+1. **"Resume" sends a real message.** DSH offers no "continue without a message" verb: `prompt` rejects content with no non-whitespace text (the gateway's `hasPromptContent` guard), and there is no session-level resume. So resuming a paused card sends a minimal real instruction (`继续`). The card leaves the paused state and starts running; the message is visible in the transcript.
 
-2. **Blank sessions stay off the board.** DSH reuses one empty "New session" draft per workspace, so it is excluded — the same reason the original skipped `thread.ephemeral` threads.
-
-Everything else — the three columns and their copy, card anatomy, the 16-colour palette and its least-used balancing, the status precedence, the stable ordering, the adaptive layout arithmetic, the interactions and the store schema — is reproduced from the original.
+2. **Blank sessions stay off the board.** DSH reuses one empty "New session" draft per workspace, so it is a scratch slot rather than a task, and the board excludes it.
 
 ## Contributing
 
@@ -133,7 +131,7 @@ Issues and PRs welcome. Please run `npm test` before opening a PR; if you touch 
 
 [MIT](LICENSE).
 
-This project is not affiliated with DeepSeek AI or OpenAI. "DeepSeek Harness" and "Codex" are the property of their respective owners.
+This project is not affiliated with DeepSeek AI.
 
 ---
 
@@ -158,25 +156,25 @@ This project is not affiliated with DeepSeek AI or OpenAI. "DeepSeek Harness" an
 从 GitHub 直接安装（当前唯一可用方式，包尚未发布到 npm）：
 
 ```sh
-dsh plugin --profile <你的 profile> add git+https://github.com/cpsGGG/dsh-codex-task-board.git
+dsh plugin --profile <你的 profile> add git+https://github.com/cpsGGG/dsh-task-board.git
 ```
 
 然后重启 DSH，点侧边栏底部的 **任务面板**。
 
-也可以先 `git clone` 再 `add ./dsh-codex-task-board`，或锁定到某个 tag/commit：
-`add git+https://github.com/cpsGGG/dsh-codex-task-board.git#v1.0.0`。
+也可以先 `git clone` 再 `add ./dsh-task-board`，或锁定到某个 tag/commit：
+`add git+https://github.com/cpsGGG/dsh-task-board.git#v1.0.0`。
 
 `lib/client.js` 已随仓库提交，**无需构建、也不会执行任何安装脚本**——本包刻意不提供 `prepare`，否则 git 安装会触发 pnpm 的 `allowBuilds` 提示。改动 `src/` 后运行 `npm run build` 并重新安装。
 
-> **Windows 提示**：pnpm 对 `file:` 依赖是**复制**而非软链。若你在本地 checkout 上开发，建议把 profile 的 `node_modules/dsh-codex-task-board` 用目录联接指向工作目录，否则每次构建后都要重装。
+> **Windows 提示**：pnpm 对 `file:` 依赖是**复制**而非软链。若你在本地 checkout 上开发，建议把 profile 的 `node_modules/dsh-task-board` 用目录联接指向工作目录，否则每次构建后都要重装。
 
-### 与原始 Codex 面板的两处差异
+### 行为说明
 
-1. **「启动」发送真实消息**。原版发 `thread/resume` + **空的** `turn/start`（"不追加用户消息地继续"）。DSH 没有这个动词：`prompt` 拒绝没有非空白文本的内容，也没有会话级 resume。因此这里发送一条最小真实指令（`继续`）——卡片同样离开暂停态并开始运行，区别只是该消息在对话记录里可见。
+有两处行为值得了解，都是 DSH 会话模型决定的：
 
-2. **空会话不入面板**。DSH 每个工作区复用一个空的「新会话」草稿，故排除；原版对应的是跳过 `thread.ephemeral`。
+1. **「启动」发送真实消息**。DSH 没有"不追加消息地继续"这个动词：`prompt` 拒绝没有非空白文本的内容，也没有会话级 resume。因此启动暂停的卡片会发送一条最小真实指令（`继续`）——卡片离开暂停态并开始运行，该消息在对话记录里可见。
 
-其余部分（三栏与文案、卡片结构、16 色色板与"最少使用"平衡、状态判定优先级、稳定排序、自适应布局算法、交互、存储结构）均照原版复刻。
+2. **空会话不入面板**。DSH 每个工作区复用一个空的「新会话」草稿，它是草稿位而非任务，故面板排除。
 
 ### 开发
 
@@ -192,4 +190,4 @@ npm run preview   # 重新生成 preview/board.html
 
 ### 许可
 
-[MIT](LICENSE)。本项目与 DeepSeek AI、OpenAI 均无隶属关系。
+[MIT](LICENSE)。本项目与 DeepSeek AI 无隶属关系。
