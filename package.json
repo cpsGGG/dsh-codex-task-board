@@ -1,0 +1,70 @@
+{
+  "name": "dsh-codex-task-board",
+  "version": "1.0.0",
+  "description": "Cross-project task board for DeepSeek Harness: every DSH session becomes a task card across 待处理 / 处理中 / 待审阅, with priority colours, stable ordering and one-page adaptive layout.",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "task-board",
+    "kanban",
+    "panel",
+    "sessions",
+    "sidebar"
+  ],
+  "homepage": "https://github.com/cpsGGG/dsh-codex-task-board#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cpsGGG/dsh-codex-task-board.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cpsGGG/dsh-codex-task-board/issues"
+  },
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "src",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "preview": "node tools/make-preview.mjs",
+    "test": "node --test tests/core.test.mjs tests/panel.test.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-locale"
+      ],
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

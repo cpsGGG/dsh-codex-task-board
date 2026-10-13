@@ -1,0 +1,18 @@
+# Dependencies (never committed; the plugin itself has none)
+node_modules/
+.pnpm-store/
+
+# Build output is committed on purpose: DSH loads `lib/client.js` directly and
+# the market's one-click install must not require a build step. See README.
+
+# Local editor / OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.log
+npm-debug.log*
+
+# Local scratch
+.tmp/

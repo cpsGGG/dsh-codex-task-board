@@ -1,0 +1,12 @@
+# Normalise line endings so a Windows checkout and a Linux/macOS checkout
+# produce byte-identical sources — the build inlines src/*.mjs into lib/client.js,
+# so mixed endings would make the committed bundle differ per platform.
+* text=auto eol=lf
+
+# Binary assets must never be line-ending converted.
+*.png binary
+*.ico binary
+
+# Generated, but committed on purpose (DSH loads it directly).
+lib/client.js linguist-generated=true
+preview/board.html linguist-generated=true
